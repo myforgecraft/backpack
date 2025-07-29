@@ -1,4 +1,4 @@
-name: Publish AAB to Google Play (Draft)
+name: Publish AAB to Google Play (Open Testing)
 
 on:
   workflow_dispatch:
@@ -36,7 +36,7 @@ jobs:
       - name: Install fastlane
         run: gem install fastlane -NV
 
-      - name: Publish .aab to Google Play (draft status)
+      - name: Publish .aab to Google Play (open testing)
         env:
           SUPPLY_JSON_KEY: ${{ secrets.SUPPLY_JSON_KEY }}
         run: |
@@ -45,4 +45,4 @@ jobs:
             --aab backpack.aab \
             --json_key api-key.json \
             --package_name com.Forgecraft.BackPackMod \
-            --release_status draft
+            --track open
