@@ -1,7 +1,7 @@
 name: Publish Ready AAB to Google Play
 
 on:
-  workflow_dispatch:  # Запуск вручную
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -11,12 +11,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 1. Устанавливаем Ruby
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      # 2. Устанавливаем fastlane
       - name: Install fastlane
         run: gem install fastlane -NV
 
+      # 3. Публикуем .aab
       - name: Publish .aab to Google Play
         env:
           SUPPLY_JSON_KEY: ${{ secrets.SUPPLY_JSON_KEY }}
         run: |
           echo "$SUPPLY_JSON_KEY" > api-key.json
-          fastlane supply --aab releases/mods/backpack.aab --json_key api-key.json --package_name com.Forgecraft.BackPackMod
+          fastlane supply --aab release/app-release.aab --json_key api-key.json --package_name com.Forgecraft.BackPackMod
