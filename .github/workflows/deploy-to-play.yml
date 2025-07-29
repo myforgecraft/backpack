@@ -1,0 +1,34 @@
+name: Deploy to Google Play
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build .aab
+        run: ./gradlew bundleRelease
+
+      - name: Install fastlane
+        run: gem install fastlane -NV
+
+      - name: Upload .aab to Google Play
+        env:
+          SUPPLY_JSON_KEY: ${{ secrets.SUPPLY_JSON_KEY }}
+        run: |
+          echo "$SUPPLY_JSON_KEY" > api-key.json
+          fastlane supply --aab app/build/outputs/bundle/release/app-release.aab --json_key api-key.json --package_name com.Forgecraft.BackPackMod
