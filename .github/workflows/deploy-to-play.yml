@@ -13,13 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install jq
+        run: sudo apt-get install jq
+
       - name: Download backpack.aab from release
-        uses: actions/download-release-asset@v1
-        with:
-          repo: myforgecraft/backpack
-          tag: ${{ github.event.inputs.release_tag }}
-          file: backpack.aab
-          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_DATA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/myforgecraft/backpack/releases/tags/${{ github.event.inputs.release_tag }}")
+          ASSET_ID=$(echo "$RELEASE_DATA" | jq '.assets[] | select(.name=="backpack.aab") | .id')
+          curl -L -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/octet-stream" \
+            "https://api.github.com/repos/myforgecraft/backpack/releases/assets/$ASSET_ID" \
+            -o backpack.aab
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
