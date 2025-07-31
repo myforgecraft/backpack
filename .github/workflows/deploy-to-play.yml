@@ -45,4 +45,4 @@ jobs:
             --aab backpack.aab \
             --json_key api-key.json \
             --package_name com.Forgecraft.BackPackMod \
-            --track open_testing
+            --track open
